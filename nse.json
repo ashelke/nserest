@@ -1,0 +1,8 @@
+{
+	"nse_host" : "BEIMUM-AS230412",
+	"nse_database" : "nse",
+	"nse_user" : "nseuser",
+	"nse_password" : "Nseuser@2019",
+	"timeframe" : 15,
+	"api_url" : "https://beta.nseindia.com/api/option-chain-indices?symbol="
+}
