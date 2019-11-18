@@ -7,6 +7,7 @@ Created on Wed Nov 13 15:16:11 2019
 import requests
 import json
 import pandas as pd
+import collections
 import pymssql
 
 
