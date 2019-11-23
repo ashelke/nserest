@@ -10,7 +10,7 @@ import logging
 import logging.handlers
 import threading
 import collections
-import pymssql
+import pyodbc
 import pandas as pd
 import time 
 import os
@@ -133,7 +133,7 @@ class nse(object):
         return Response("Hello, World!")
     
     def symboldd(self, request, **values):
-        connection = pymssql.connect(host=self.nse_host, user=self.nse_user, password=self.nse_password, database=self.nse_database)
+        connection = pyodbc.connect(Driver='{SQL Server}', server=self.nse_host,database=self.nse_database,user=self.nse_user,password=self.nse_password)
             
         cursor = connection.cursor()  
 
@@ -159,7 +159,7 @@ class nse(object):
         return response
     
     def expirydd(self, request, **values):
-        connection = pymssql.connect(host=self.nse_host, user=self.nse_user, password=self.nse_password, database=self.nse_database)
+        connection = pyodbc.connect(Driver='{SQL Server}', server=self.nse_host,database=self.nse_database,user=self.nse_user,password=self.nse_password)
             
         cursor = connection.cursor()  
 
@@ -195,7 +195,7 @@ class nse(object):
                 dt =  pd.to_datetime(j['ExpiryDates'])
                 ExpiryDates = dt.strftime('%Y/%m/%d')
         
-                connection = pymssql.connect(host=self.nse_host, user=self.nse_user, password=self.nse_password, database=self.nse_database)
+                connection = pyodbc.connect(Driver='{SQL Server}', server=self.nse_host,database=self.nse_database,user=self.nse_user,password=self.nse_password)
                     
                 cursor = connection.cursor()  
         

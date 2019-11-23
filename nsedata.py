@@ -14,7 +14,7 @@ from datetime import datetime, time, timedelta
 import os
 import numpy as np
 import collections
-import pymssql
+import pyodbc
 import symbolexpiry
 
 #url = 'https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY'
@@ -36,7 +36,7 @@ class nse(object):
     def nsedata(self, **values):
         try:
             
-            connection = pymssql.connect(host=self.nse_host, user=self.nse_user, password=self.nse_password, database=self.nse_database)
+            connection = pyodbc.connect(Driver='{SQL Server}', server=self.nse_host,database=self.nse_database,user=self.nse_user,password=self.nse_password)
                 
             cursor = connection.cursor()  
             
@@ -61,13 +61,12 @@ class nse(object):
             records = cursor.fetchall()
             
             df = pd.DataFrame(records)
-            print(df)
             
             for i,row in df.iterrows():
                 df_list = []
-                symbol = row[0]
-                expiry = row[1]
-                print(expiry)
+                symbol = row[0][0]
+                expiry = row[0][1]
+
                 url = self.api_url + symbol
                 
                 r = requests.get(url).json()
@@ -98,10 +97,11 @@ class nse(object):
                     
                     
                     df1 = df1[['strikePrice', 'expiryDate', 'underlying', 'identifier', 'openInterest','changeinOpenInterest','pchangeinOpenInterest', 'totalTradedVolume', 'impliedVolatility', 'lastPrice', 'change','pChange', 'totalBuyQuantity', 'totalSellQuantity', 'bidQty', 'bidprice', 'askQty','askPrice', 'underlyingValue','type','Time','datetime']]
-            
+
                     for i,row in df1.iterrows():
-                        sql = "insert into OptionChainData VALUES (" + "%s,"*(len(row)-1) + "%s)"
+                        sql = "insert into OptionChainData(strikePrice, expiryDate, underlying, identifier, openInterest,changeinOpenInterest,pchangeinOpenInterest, totalTradedVolume, impliedVolatility, lastPrice, change,pChange, totalBuyQuantity, totalSellQuantity, bidQty, bidprice, askQty,askPrice, underlyingValue,type,Time,datetime) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
                         cursor.execute(sql, tuple(row))
+                        # cursor.execute(sql, row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21])
                         connection.commit()
                 else:
                     pass
@@ -115,7 +115,7 @@ def main():
     with open("nse.json") as f:
         config = json.loads(f.read())
     
-#    nse(config).nsedata()        
+    # nse(config).nsedata()        
     timeframe = config["timeframe"]
     print(timeframe)
     while time(9,15) <= datetime.now().time() <= time(15,30):

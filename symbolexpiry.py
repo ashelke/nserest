@@ -8,7 +8,7 @@ import requests
 import json
 import pandas as pd
 import collections
-import pymssql
+import pyodbc
 
 
 
@@ -22,7 +22,7 @@ nse_password = config["nse_password"]
 api_url = config["api_url"]
 
 
-connection = pymssql.connect(host=nse_host, user=nse_user, password=nse_password, database=nse_database)
+connection = pyodbc.connect(Driver='{SQL Server}', server=nse_host,database=nse_database,user=nse_user,password=nse_password)
     
 cursor = connection.cursor()  
 
@@ -36,17 +36,17 @@ cursor.execute(sql_select_Query)
 try:
     
     records = cursor.fetchall()
-    
+
     df = pd.DataFrame(records)
-    
+
     for i,row in df.iterrows():
-        fk_id = row[0]
-        symbol = row[1] 
+        fk_id = row[0][0]
+        symbol = row[0][1] 
         url = api_url + symbol
         r = requests.get(url).json()
         lists = []
         for i in r['records']['expiryDates']:
-            cursor.execute("INSERT INTO [dbo].[ExpiryDates] (SymbolID,ExpiryDates) VALUES(%s,%s)", (fk_id,i))
+            cursor.execute("INSERT INTO [dbo].[ExpiryDates] (SymbolID,ExpiryDates) VALUES(?,?)", fk_id,i)
             connection.commit()
 except:
     print("No record found")
