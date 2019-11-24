@@ -399,9 +399,14 @@ class nse(object):
                     atm_iv_val = atm_iv['impliedVolatility'].tail(1).item()
                     df11.loc[i,'atm_iv'] = atm_iv_val
                     if typeData == 'PE':
-                        df11.loc[i,'winningProb'] = round((normdist(uvCurr,strikePrice,dte,atm_iv_val) * 100),2)
+                        atm_iv_val_ce = atm_iv_val
                     else:
-                        df11.loc[i,'winningProb'] = round(1-(normdist(uvCurr,strikePrice,dte,atm_iv_val) * 100),2)
+                        atm_iv_val_pe = atm_iv_val
+                        
+                    if typeData == 'PE':
+                        df11.loc[i,'winningProb'] = round((normdist(uvCurr,strikePrice,dte,atm_iv_val_ce) * 100),2)
+                    else:
+                        df11.loc[i,'winningProb'] = round(((1-normdist(uvCurr,strikePrice,dte,atm_iv_val_pe)) * 100),2)
                 
                 atm_call_iv = df11[(df11["type"]== 'CE')]
                 atm_put_iv  = df11[(df11["type"]== 'PE')]
