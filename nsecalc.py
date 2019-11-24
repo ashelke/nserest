@@ -476,10 +476,8 @@ if __name__ == '__main__':
 
     if 'exception_receiver' in config:
         smtp_handler = logging.handlers.SMTPHandler(
-            mailhost=("apm", 25),
-            # fromaddr="ananda.shelke@bloomenergy.com",
-            # toaddrs=config["ananda.shelke@bloomenergy.com"],
-            subject="APM TMO  Exception")
+            mailhost=("app", 25),
+            subject="Exception")
         smtp_handler.setFormatter(formatter)
         smtp_handler.setLevel(logging.ERROR)
         # hack to make the email handler work
